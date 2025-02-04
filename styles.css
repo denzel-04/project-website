@@ -1,0 +1,58 @@
+const yesButton = document.getElementById("yesButton");
+const noButton = document.getElementById("noButton");
+const confettiCanvas = document.getElementById("confetti");
+const ctx = confettiCanvas.getContext("2d");
+
+let buttonSize = 16;
+const noTexts = ["No", "Are you sure?", "Think again!", "Really?", "Last chance!", "Please? 🥺"];
+
+let noClickCount = 0;
+
+// Change text of the "No" button and increase "Yes" button size
+noButton.addEventListener("click", () => {
+    if (noClickCount < noTexts.length - 1) {
+        noButton.textContent = noTexts[noClickCount];
+        noClickCount++;
+    } else {
+        noButton.textContent = "Okay 😢";
+    }
+
+    buttonSize += 5;
+    yesButton.style.fontSize = buttonSize + "px";
+});
+
+// Confetti effect when "Yes" is clicked
+yesButton.addEventListener("click", () => {
+    startConfetti();
+});
+
+function startConfetti() {
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+
+    let confetti = [];
+    for (let i = 0; i < 100; i++) {
+        confetti.push({
+            x: Math.random() * confettiCanvas.width,
+            y: Math.random() * confettiCanvas.height,
+            size: Math.random() * 5 + 2,
+            speed: Math.random() * 3 + 1,
+            color: `hsl(${Math.random() * 360}, 100%, 70%)`
+        });
+    }
+
+    function drawConfetti() {
+        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        confetti.forEach(p => {
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            p.y += p.speed;
+            if (p.y > confettiCanvas.height) p.y = 0;
+        });
+        requestAnimationFrame(drawConfetti);
+    }
+
+    drawConfetti();
+}
