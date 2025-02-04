@@ -1,39 +1,85 @@
-body {
-    text-align: center;
-    font-family: 'Arial', sans-serif;
-    background-color: #ffccd5;
-    color: #d63384;
-}
+const yesButton = document.getElementById("yesButton");
+const noButton = document.getElementById("noButton");
 
-.container {
-    margin-top: 100px;
-}
+let yesSize = 1.5; // Initial font size for Yes button
+const noTexts = [
+  "No",
+  "Are you sure?",
+  "Really?",
+  "Think again?",
+  "Please?",
+  "Last chance!",
+  "🥺",
+];
+let noClickCount = 0;
 
-h1 {
-    font-size: 30px;
-    font-weight: bold;
-}
+// Handle No button click
+noButton.addEventListener("click", () => {
+  // Increase Yes button size
+  yesSize += 0.3;
+  yesButton.style.fontSize = `${yesSize}rem`;
 
-.buttons {
-    margin-top: 20px;
-}
+  // Change No button text
+  noClickCount = (noClickCount + 1) % noTexts.length;
+  noButton.textContent = noTexts[noClickCount];
+});
 
-button {
-    font-size: 18px;
-    padding: 10px 20px;
-    margin: 10px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-}
+// Handle Yes button click
+yesButton.addEventListener("click", () => {
+  startConfetti();
+});
 
-#yesButton {
-    background-color: #ff4081;
-    color: white;
-}
+// Confetti Effect
+function startConfetti() {
+  const canvas = document.getElementById("confetti");
+  const confetti = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-#noButton {
-    background-color: #cccccc;
-    color: black;
+  const particles = [];
+  const colors = ["#ff0000", "#ff69b4", "#ffffff"];
+
+  for (let i = 0; i < 200; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 5 + 1,
+      speedX: Math.random() * 3 - 1.5,
+      speedY: Math.random() * 3 - 1.5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    });
+  }
+
+  function draw() {
+    confetti.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach((p) => {
+      confetti.fillStyle = p.color;
+      confetti.beginPath();
+      confetti.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      confetti.fill();
+    });
+  }
+
+  function update() {
+    particles.forEach((p) => {
+      p.x += p.speedX;
+      p.y += p.speedY;
+
+      if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+    });
+  }
+
+  function animate() {
+    draw();
+    update();
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  setTimeout(() => {
+    canvas.width = 0;
+    canvas.height = 0;
+  }, 5000);
 }
